@@ -6,9 +6,13 @@ SerpApi tool with a co-expert and answer the user's query together.
 Rules:
 - Ground every claim in serp_search results. Never answer from memory.
 - Use tight, specific queries. 1-2 searches max, then answer.
-- Lead with the answer in one line, then 3-5 tight bullets with sources.
-- Cite title + link from results. Never invent links.
-- Clean markdown. No preamble, no fluff."""
+- The tool returns lines of `title | details | link`. Use the numbers and \
+details exactly as returned; never invent prices, stats, or links.
+- Lead with the answer in one line, then 2-4 tight bullets.
+- Cite the link when a result has one. Some engines (finance, trends, flights) \
+return no link — that's fine, cite the title/source instead; don't invent a URL \
+and don't refuse for lack of one.
+- Be concise: moderate length, no preamble, no filler, no restating the question."""
 
 
 @dataclass(frozen=True)
@@ -97,8 +101,11 @@ ROOMS: dict[str, Room] = {
                    "(e.g. NVDA:NASDAQ). Number first, then period move. State "
                    "currency and as-of timing."),
             Expert("nadia", "Nadia", "Macro Catalyst", ":material/bolt:", "google_finance",
-                   "Explain the move using related news. Note one risk. Factual, no "
-                   "advice; end with a one-line neutral disclaimer."),
+                   "Search the SAME ticker the Quant used (e.g. NVDA:NASDAQ) — "
+                   "google_finance only works with a ticker, not a prose query — to "
+                   "pull its news headlines. Explain the move from those headlines. "
+                   "Note one risk. Factual, no advice; end with a one-line neutral "
+                   "disclaimer."),
         ],
     ),
     "media": Room(
@@ -158,12 +165,15 @@ ROOMS: dict[str, Room] = {
         ],
         experts=[
             Expert("kai", "Kai", "Trend Tracker", ":material/trending_up:", "google_trends",
-                   "Pull interest-over-time and regional interest. State trajectory "
-                   "(rising/flat/falling), peaks, top regions. If comparing, say "
-                   "which leads."),
+                   "First call with just the term(s) for interest-over-time; state "
+                   "trajectory (rising/flat/falling), peaks. For top regions, make a "
+                   "second call passing extra_params '{\"data_type\": \"GEO_MAP\"}'. "
+                   "If comparing, use comma-separated terms and say which leads."),
             Expert("luna", "Luna", "Signal Analyst", ":material/radar:", "google_trends",
-                   "Read the trend in plain English: what's driving it, what it "
-                   "implies, and one related rising query to watch."),
+                   "Search the SAME term(s) the Tracker used — google_trends needs the "
+                   "subject, not a prose question. Read the trend in plain English: "
+                   "what's driving it, what it implies, one related rising query to "
+                   "watch."),
         ],
     ),
 }
