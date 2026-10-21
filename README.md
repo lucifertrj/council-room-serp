@@ -1,12 +1,16 @@
 # ▣ Council Room
 
-![Council Room floorplan](assets/ui.png)
+> Watch the launch video:
+
+
 
 Stop drowning in 20 open tabs. **Council Room** is an interactive, minimalist pixel-art clubhouse of specialized AI rooms powered by **SerpApi** and **Agno Agents**.
 
 Walk your operative around the 6-room floorplan using **Arrow Keys / WASD / On-Screen D-Pad** (or click any room directly) to enter a specialized deliberation room. Inside each room, you can either:
 - **Talk to the Full Room Council** — watch both specialist agents query live SerpApi engines in sequence, cross-examine findings, and synthesize a grounded answer with verifiable sources.
 - **Talk 1-on-1 with a Specialist** — chat directly with an individual analyst for targeted lookups.
+
+![Council Room floorplan](assets/ui.png)
 
 Every live SerpApi call streams into the **Sidebar Search Log**, where you can inspect parameters, view raw compact outputs, or clear entries.
 
@@ -67,7 +71,6 @@ Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
    ```bash
    uv run streamlit run app.py
    ```
-
 ---
 
 ## 📄 License
