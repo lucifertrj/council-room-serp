@@ -76,3 +76,8 @@ Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE). Repo: https://github.com/lucifertrj/council-room-serp
+
+## Demo
+
+- Try it now: https://council-room-serp.streamlit.app/
+- This is my submission for PyConZA Hackathon
