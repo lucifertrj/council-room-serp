@@ -46,7 +46,6 @@ ROOMS: dict[str, Room] = {
         accent="#2dd4bf",
         caption="serpapi : google",
         samples=[
-            "Latest Eskom grid status & solar tax incentives in South Africa",
             "Latest breakthroughs from the James Webb telescope",
             "How does the new Two-Pot retirement system work in SA?",
         ],
@@ -67,9 +66,8 @@ ROOMS: dict[str, Room] = {
         accent="#38bdf8",
         caption="serpapi : flights + hotels",
         samples=[
-            "Cheapest flights Joburg to Cape Town + Camps Bay stays",
-            "Best-value boutique heritage hotels in Udaipur, India",
-            "Plan a 4-day trip to Florence & Rome in May",
+            "Flights Johannesburg (JNB) to Cape Town (CPT) + a V&A Waterfront hotel",
+            "Flights Delhi (DEL) to Udaipur (UDR) + a heritage hotel in Udaipur",
         ],
         experts=[
             Expert("lena", "Lena", "Flight Strategist", ":material/flight_takeoff:", "google_flights",
@@ -91,9 +89,8 @@ ROOMS: dict[str, Room] = {
         accent="#fbbf24",
         caption="serpapi : google_finance",
         samples=[
-            "How is USD/ZAR trading & what's moving Naspers (NPN:JSE)?",
             "Why is NVIDIA stock moving today?",
-            "Compare Capitec (CPI:JSE) vs FirstRand performance",
+            "What's moving Naspers (NPN:JSE) today?",
         ],
         experts=[
             Expert("victor", "Victor", "Quant Tape", ":material/candlestick_chart:", "google_finance",
@@ -118,7 +115,6 @@ ROOMS: dict[str, Room] = {
         samples=[
             "Latest Springboks & SA rugby news and match highlights",
             "Biggest AI releases and news this week",
-            "Top Bafana Bafana & Betway Premiership headlines today",
         ],
         experts=[
             Expert("owen", "Owen", "News Wire", ":material/newspaper:", "google_news",
@@ -137,7 +133,6 @@ ROOMS: dict[str, Room] = {
         accent="#fb923c",
         caption="serpapi : google_shopping",
         samples=[
-            "Best portable power station for load-shedding backup",
             "Best noise-cancelling headphones under $200",
             "Best beginner espresso machine that actually lasts",
         ],
@@ -161,7 +156,6 @@ ROOMS: dict[str, Room] = {
         samples=[
             "Compare Checkers Sixty60 vs Takealot search trends in SA",
             "Is search interest in 'AI agents' still accelerating?",
-            "Rising search trends around Amapiano & SA music globally",
         ],
         experts=[
             Expert("kai", "Kai", "Trend Tracker", ":material/trending_up:", "google_trends",

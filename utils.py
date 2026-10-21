@@ -3,32 +3,28 @@ from collections.abc import Iterator
 from agno.agent import Agent
 
 
-def stream_agent(agent: Agent, prompt: str) -> Iterator[tuple[str, str]]:
-    yielded_text = False
+def stream_agent(agent: Agent, prompt: str) -> Iterator[str]:
+    """Yield text deltas from an agno run.
+
+    agno 3.1.7 only surfaces `RunContent` (text) events through the stream;
+    tool-call activity is not exposed here, so the room reports tool usage from
+    the SerpApi tool's own `search_log` instead (see ui/room.py).
+    """
+    streamed = False
     try:
         for event in agent.run(prompt, stream=True):
-            name = getattr(event, "event", "") or type(event).__name__
-            if "Content" in name:
-                content = getattr(event, "content", None)
-                if isinstance(content, str) and content:
-                    yielded_text = True
-                    yield ("text", content)
-            elif "Tool" in name and "Completed" not in name:
-                tool = getattr(event, "tool", None)
-                tname = (getattr(tool, "tool_name", None)
-                         or getattr(event, "tool_name", None) or "serp_search")
-                targs = (getattr(tool, "tool_args", None)
-                         or getattr(event, "tool_args", None) or {})
-                q = targs.get("query") or targs.get("q") or "" if isinstance(targs, dict) else ""
-                yield ("tool", f"🔎 `{tname}` → {q}" if q else f"🔎 `{tname}`")
+            content = getattr(event, "content", None)
+            if isinstance(content, str) and content:
+                streamed = True
+                yield content
     except Exception as exc:
-        yield ("text", f"\n\n_Error: {exc}_")
+        yield f"\n\n_Error: {exc}_"
         return
 
-    if not yielded_text:
+    if not streamed:
         try:
             result = agent.run(prompt)
             text = getattr(result, "content", None)
-            yield ("text", text if isinstance(text, str) else "_No response._")
+            yield text if isinstance(text, str) and text else "_No response._"
         except Exception as exc:
-            yield ("text", f"_Error: {exc}_")
+            yield f"_Error: {exc}_"

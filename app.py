@@ -8,7 +8,8 @@ from ui.styles import inject
 
 
 def main() -> None:
-    st.set_page_config(page_title=config.APP_TITLE, page_icon="▣", layout="wide")
+    st.set_page_config(page_title=config.APP_TITLE, page_icon="▣", layout="wide",
+                       initial_sidebar_state="expanded")
     inject()
     st.session_state.setdefault("room", None)
     st.session_state.setdefault("messages", {})

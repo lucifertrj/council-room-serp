@@ -59,20 +59,32 @@ def _header(room: Room) -> None:
 
 def _run_expert(expert: Expert, query: str, prior: list[tuple[str, str]]) -> dict:
     agent = build_expert_agent(expert)
+    log = st.session_state.setdefault("search_log", [])
+    before = len(log)
     with st.chat_message(expert.name, avatar=_avatar(expert.avatar)):
         st.markdown(f"{expert.avatar} **{expert.name}** · _{expert.role}_ · `serpapi:{expert.engine}`")
         status = st.status(f"Querying SerpApi ({expert.engine})…", expanded=False)
         answer = st.empty()
-        steps, text = 0, ""
-        for kind, data in stream_agent(agent, build_prompt(query, prior)):
-            if kind == "tool":
-                steps += 1
-                status.markdown(data)
+        text = ""
+        for chunk in stream_agent(agent, build_prompt(query, prior)):
+            text += chunk
+            answer.markdown(text)
+        # The SerpApi tool logs each call at the front of search_log; the entries
+        # added during this run are everything before our snapshot index.
+        added = st.session_state.search_log[:len(st.session_state.search_log) - before]
+        with status:
+            if added:
+                for entry in reversed(added):  # chronological order
+                    label = f"**`{entry['engine']}`** · `{entry['query']}`"
+                    if entry.get("extra"):
+                        label += f"  ·  `{entry['extra']}`"
+                    st.markdown(label)
+                    st.code(entry["output"][:1500] or "—")
             else:
-                text += data
-                answer.markdown(text)
+                st.caption("No SerpApi calls recorded for this turn.")
+        n = len(added)
         status.update(
-            label=f"✓ {steps} SerpApi search(es) · {expert.engine}",
+            label=f"✓ {n} SerpApi search{'es' if n != 1 else ''} · {expert.engine}",
             state="complete", expanded=False,
         )
     return {"name": expert.name, "role": expert.role,

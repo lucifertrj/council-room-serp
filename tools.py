@@ -24,20 +24,38 @@ def _num(value):
         return None
 
 
+def _future(value, fallback_days: int) -> str:
+    """Return value if it's a future ISO date, else a date fallback_days out.
+    Google Flights/Hotels reject past dates with a 400, so a stale guess from
+    the model (e.g. a date earlier this year) must be bumped forward."""
+    try:
+        if date.fromisoformat(str(value)) >= date.today():
+            return str(value)
+    except (ValueError, TypeError):
+        pass
+    return (date.today() + timedelta(days=fallback_days)).isoformat()
+
+
 def _defaults(engine: str, params: dict) -> dict:
-    """Fill engine-specific required params so a call never hard-fails on an
-    omission the model forgot (dates are relative to today)."""
+    """Fill / repair engine-specific required params so a call never hard-fails
+    on an omission or a past date the model guessed."""
     if engine == "google_flights":
+        if params.get("outbound_date"):
+            params["outbound_date"] = _future(params["outbound_date"], 14)
+        for k in ("return_date", "inbound_date"):
+            if params.get(k):
+                params[k] = _future(params[k], 17)
         # One-way unless the caller supplied a return date (round trip needs one).
         if "type" not in params and not any(
-            k in params for k in ("return_date", "inbound_date")
+            params.get(k) for k in ("return_date", "inbound_date")
         ):
             params["type"] = "2"
     elif engine == "google_hotels":
-        if "check_in_date" not in params:
-            params["check_in_date"] = (date.today() + timedelta(days=7)).isoformat()
-        if "check_out_date" not in params:
-            params["check_out_date"] = (date.today() + timedelta(days=9)).isoformat()
+        ci = _future(params.get("check_in_date"), 7)
+        co = _future(params.get("check_out_date"), 9)
+        if date.fromisoformat(co) <= date.fromisoformat(ci):
+            co = (date.fromisoformat(ci) + timedelta(days=2)).isoformat()
+        params["check_in_date"], params["check_out_date"] = ci, co
     return params
 
 
@@ -286,6 +304,15 @@ def make_serp_tool(engine: str):
             except (json.JSONDecodeError, TypeError):
                 pass
         params = _defaults(engine, params)
+
+        if engine == "google_flights" and not (
+            params.get("departure_id") and params.get("arrival_id")):
+            out = ("google_flights needs departure_id, arrival_id and outbound_date "
+                   "in extra_params, e.g. {\"departure_id\": \"JNB\", "
+                   "\"arrival_id\": \"CPT\", \"outbound_date\": \"2026-11-05\"}. "
+                   "Ask the user for origin, destination and travel date.")
+            _log(engine, query, extra_params, out)
+            return out
 
         try:
             client = serpapi.Client(api_key=config.SERPAPI_API_KEY)
