@@ -2,7 +2,7 @@
 
 > Watch the launch video:
 
-
+https://github.com/user-attachments/assets/980f68f1-2e77-4904-832f-31b910df7f0c
 
 Stop drowning in 20 open tabs. **Council Room** is an interactive, minimalist pixel-art clubhouse of specialized AI rooms powered by **SerpApi** and **Agno Agents**.
 
